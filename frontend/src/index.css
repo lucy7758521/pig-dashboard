@@ -1,0 +1,138 @@
+/* ══════════════════════════════════════════════════════════
+   国内生猪综合数据看板 - 科技感深色主题
+   ══════════════════════════════════════════════════════════ */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
+    Arial, 'Noto Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background: #0a0e17;
+  color: #e0e6ed;
+  overflow-x: hidden;
+}
+
+/* 网格背景动画 */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-image:
+    linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  pointer-events: none;
+  z-index: 0;
+  animation: gridMove 20s linear infinite;
+}
+
+@keyframes gridMove {
+  0% { background-position: 0 0, 0 0; }
+  100% { background-position: 60px 60px, 60px 60px; }
+}
+
+/* 全局发光滚动条 */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0d1117;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00d4ff, #0a84ff);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00f0ff, #4090ff);
+}
+
+/* ════════ Ant Design 全局深色覆盖 ════════ */
+
+/* 卡片 - 玻璃拟态 */
+.ant-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+.ant-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 132, 255, 0.15), 0 0 1px rgba(0, 200, 255, 0.3) !important;
+}
+
+/* 表格行悬停 */
+.ant-table-tbody > tr:hover > td {
+  background: rgba(0, 132, 255, 0.08) !important;
+}
+
+/* 菜单选中项发光 */
+.ant-menu-item-selected {
+  text-shadow: 0 0 12px rgba(0, 200, 255, 0.5) !important;
+}
+
+/* 统计数字 */
+.ant-statistic-content-value {
+  font-weight: 700 !important;
+  letter-spacing: -0.5px;
+}
+
+/* 输入框 */
+.ant-input, .ant-select-selector {
+  border-radius: 6px !important;
+}
+
+/* 按钮 */
+.ant-btn {
+  border-radius: 6px !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-btn-primary {
+  box-shadow: 0 0 16px rgba(231, 76, 60, 0.3) !important;
+}
+
+.ant-btn-primary:hover {
+  box-shadow: 0 0 24px rgba(231, 76, 60, 0.5) !important;
+}
+
+/* Tag 标签 */
+.ant-tag {
+  border-radius: 4px;
+  font-weight: 500;
+}
+
+/* Pagination */
+.ant-pagination-item-active {
+  box-shadow: 0 0 10px rgba(0, 132, 255, 0.4);
+}
+
+/* Tabs 选项卡 */
+.ant-tabs-tab-active .ant-tabs-tab-btn {
+  text-shadow: 0 0 8px currentColor;
+}
+
+/* 数字跳动动画 */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+.live-indicator {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #00ff88;
+  box-shadow: 0 0 8px #00ff88;
+  animation: pulse 2s ease-in-out infinite;
+  margin-right: 6px;
+}
