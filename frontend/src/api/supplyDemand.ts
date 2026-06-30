@@ -1,7 +1,9 @@
-import client from './client'
+import { apiGet } from './client'
 import type { ApiResponse, SupplyDemandOverview } from '../types'
 
 export async function fetchSupplyDemandOverview() {
-  const res = await client.get<ApiResponse<SupplyDemandOverview>>('/supply-demand/overview')
-  return res.data.data
+  return apiGet<ApiResponse<SupplyDemandOverview>>(
+    '/api/v1/supply-demand/overview',
+    'supply-demand.json'
+  ).then((res) => (res as ApiResponse<SupplyDemandOverview>).data)
 }

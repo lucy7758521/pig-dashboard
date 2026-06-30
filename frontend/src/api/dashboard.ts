@@ -1,7 +1,9 @@
-import client from './client'
+import { apiGet } from './client'
 import type { ApiResponse, DashboardOverview } from '../types'
 
 export async function fetchDashboardOverview() {
-  const res = await client.get<ApiResponse<DashboardOverview>>('/dashboard/overview')
-  return res.data.data
+  return apiGet<ApiResponse<DashboardOverview>>(
+    '/api/v1/dashboard/overview',
+    'dashboard.json'
+  ).then((res) => (res as ApiResponse<DashboardOverview>).data)
 }

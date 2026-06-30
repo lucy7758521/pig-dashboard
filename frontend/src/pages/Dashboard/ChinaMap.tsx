@@ -15,15 +15,19 @@ export default function ChinaMap({ data, loading }: Props) {
   const [loadError, setLoadError] = useState<string | null>(null)
 
   useEffect(() => {
-    client.get<{ code: number; data: object }>('/china-map')
-      .then((res) => {
-        if (res.data?.data) {
-          const geoData = res.data.data as object
-          echarts.registerMap('china', geoData as Parameters<typeof echarts.registerMap>[1])
-          setGeoJson(geoData)
-        } else {
-          throw new Error('地图数据为空')
-        }
+    const isGH = window.location.hostname.includes('github.io')
+    const basePath = isGH ? '/pig-dashboard' : ''
+
+    // GitHub Pages: 从静态 data/china-map.json 加载；本地: 从后端 API 加载
+    const loadGeo = isGH
+      ? fetch(`${basePath}/data/china-map.json`).then(r => r.json()).then(d => d.data)
+      : client.get<{ code: number; data: object }>('/china-map').then(r => r.data.data)
+
+    loadGeo
+      .then((geoData) => {
+        if (!geoData) throw new Error('地图数据为空')
+        echarts.registerMap('china', geoData as Parameters<typeof echarts.registerMap>[1])
+        setGeoJson(geoData)
       })
       .catch((err) => {
         console.warn('后端地图加载失败，尝试备用 CDN:', err)
