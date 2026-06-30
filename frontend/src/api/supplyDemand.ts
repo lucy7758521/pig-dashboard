@@ -1,9 +1,6 @@
-import { apiGet } from './client'
-import type { ApiResponse, SupplyDemandOverview } from '../types'
+import { safeGet } from './client'
 
 export async function fetchSupplyDemandOverview() {
-  return apiGet<ApiResponse<SupplyDemandOverview>>(
-    '/api/v1/supply-demand/overview',
-    'supply-demand.json'
-  ).then((res) => (res as ApiResponse<SupplyDemandOverview>).data)
+  const res = await safeGet<any>('/api/v1/supply-demand/overview', 'supply-demand.json')
+  return res.data || res
 }

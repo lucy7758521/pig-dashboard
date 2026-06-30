@@ -23,8 +23,7 @@ export default function NewsPage() {
   const { data, isLoading } = useNewsList(page, 20, category)
   const { data: categories } = useNewsCategories()
 
-  const filteredItems = data?.items?.filter(
-    (item) =>
+  const filteredItems = data?.items?.filter((item: any) =>
       !search ||
       item.title.includes(search) ||
       item.summary?.includes(search)
@@ -51,7 +50,7 @@ export default function NewsPage() {
               setCategory(val)
               setPage(1)
             }}
-            options={(categories || ['政策', '市场分析', '价格预测', '行业动态']).map((c) => ({
+            options={((categories as string[]) || ['政策', '市场分析', '价格预测', '行业动态']).map((c) => ({
               value: c,
               label: c,
             }))}

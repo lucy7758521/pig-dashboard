@@ -164,7 +164,7 @@ export default function PricesPage() {
               style={{ width: 150 }}
               onChange={(val) => setSearchProvince(val)}
               options={
-                data?.map((item) => ({
+                data?.map((item: any) => ({
                   value: item.province,
                   label: item.province,
                 })) || []

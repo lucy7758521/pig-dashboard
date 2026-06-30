@@ -71,7 +71,7 @@ export default function EnterpriseDetailPage() {
                 <Card size="small">
                   <Statistic
                     title={key}
-                    value={val}
+                    value={String(val)}
                     suffix="条"
                     valueStyle={{ color: eventTypeColors[key] || '#333' }}
                   />

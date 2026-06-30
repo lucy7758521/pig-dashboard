@@ -18,9 +18,14 @@ const menuItems = [
   { key: '/policies', icon: <FileProtectOutlined />, label: '政策动态' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
   const navigate = useNavigate()
   const location = useLocation()
+
+  const handleClick = (key: string) => {
+    navigate(key)
+    onNavigate?.()
+  }
 
   const selectedKey = menuItems.find(
     (item) => item.key !== '/' && location.pathname.startsWith(item.key)
@@ -42,7 +47,7 @@ export default function Sidebar() {
         theme="dark"
         selectedKeys={[selectedKey]}
         items={menuItems}
-        onClick={({ key }) => navigate(key)}
+        onClick={({ key }) => handleClick(key)}
         style={{
           background: 'transparent',
           borderRight: 0,

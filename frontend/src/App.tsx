@@ -12,17 +12,75 @@ import EnterprisesPage from './pages/Enterprises'
 import EnterpriseDetailPage from './pages/Enterprises/EnterpriseDetail'
 import PolicyPage from './pages/Policy'
 import SupplyDemandPage from './pages/SupplyDemand'
+import { useState, useEffect } from 'react'
 
 const { Content, Sider } = Layout
 
 const queryClient = new QueryClient({
   defaultOptions: {
-    queries: {
-      retry: 2,
-      refetchOnWindowFocus: false,
-    },
+    queries: { retry: 1, refetchOnWindowFocus: false },
   },
 })
+
+function AppLayout() {
+  const [mobile, setMobile] = useState(false)
+  const [collapsed, setCollapsed] = useState(false)
+
+  useEffect(() => {
+    const check = () => setMobile(window.innerWidth < 768)
+    check()
+    window.addEventListener('resize', check)
+    return () => window.removeEventListener('resize', check)
+  }, [])
+
+  return (
+    <Layout style={{ minHeight: '100vh', background: 'transparent', position: 'relative', zIndex: 1 }}>
+      <Header onMenuClick={() => setCollapsed(!collapsed)} isMobile={mobile} />
+      <Layout>
+        {!mobile && (
+          <Sider
+            width={210}
+            style={{
+              background: 'rgba(10, 14, 23, 0.95)',
+              borderRight: '1px solid rgba(0, 200, 255, 0.08)',
+              backdropFilter: 'blur(20px)',
+            }}
+          >
+            <Sidebar />
+          </Sider>
+        )}
+        {mobile && collapsed && (
+          <div style={{
+            position: 'fixed', top: 64, left: 0, right: 0, bottom: 0,
+            zIndex: 99, background: 'rgba(10,14,23,0.98)', backdropFilter: 'blur(20px)',
+            padding: 12,
+          }}>
+            <Sidebar onNavigate={() => setCollapsed(false)} />
+          </div>
+        )}
+        <Content
+          style={{
+            padding: mobile ? 12 : 24,
+            background: 'transparent',
+            minHeight: 'calc(100vh - 64px)',
+            overflowX: 'hidden',
+          }}
+        >
+          <Routes>
+            <Route path="/" element={<DashboardPage />} />
+            <Route path="/prices" element={<PricesPage />} />
+            <Route path="/news" element={<NewsPage />} />
+            <Route path="/news/:id" element={<NewsDetailPage />} />
+            <Route path="/enterprises" element={<EnterprisesPage />} />
+            <Route path="/enterprises/:name" element={<EnterpriseDetailPage />} />
+            <Route path="/policies" element={<PolicyPage />} />
+            <Route path="/supply-demand" element={<SupplyDemandPage />} />
+          </Routes>
+        </Content>
+      </Layout>
+    </Layout>
+  )
+}
 
 export default function App() {
   return (
@@ -36,80 +94,34 @@ export default function App() {
             colorSuccess: '#00ff88',
             colorWarning: '#ffaa00',
             colorError: '#ff4466',
-            colorInfo: '#00d4ff',
             borderRadius: 8,
             colorBgContainer: '#111827',
             colorBgElevated: '#1a2236',
             colorBgLayout: '#0a0e17',
             colorBorder: 'rgba(0, 200, 255, 0.12)',
-            colorBorderSecondary: 'rgba(0, 200, 255, 0.06)',
             colorText: '#e0e6ed',
             colorTextSecondary: '#8899aa',
-            colorTextTertiary: '#556677',
-            fontFamily: `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif`,
           },
           components: {
             Card: {
               colorBgContainer: 'rgba(17, 24, 39, 0.8)',
-              boxShadow: '0 4px 24px rgba(0,0,0,0.3), 0 0 1px rgba(0,200,255,0.1)',
-              paddingLG: 20,
-            },
-            Menu: {
-              darkItemBg: 'transparent',
-              darkItemSelectedBg: 'rgba(0, 200, 255, 0.12)',
-              darkItemHoverBg: 'rgba(0, 200, 255, 0.06)',
-              darkSubMenuItemBg: 'transparent',
+              paddingLG: 16,
             },
             Table: {
               headerBg: 'rgba(0, 132, 255, 0.08)',
               rowHoverBg: 'rgba(0, 132, 255, 0.06)',
               borderColor: 'rgba(0, 200, 255, 0.06)',
             },
-            Statistic: {
-              contentFontSize: 28,
-            },
+            Statistic: { contentFontSize: 24 },
             Tabs: {
               inkBarColor: '#00d4ff',
               itemActiveColor: '#00d4ff',
-              itemHoverColor: '#40e0ff',
             },
           },
         }}
       >
         <BrowserRouter>
-          <Layout style={{ minHeight: '100vh', background: 'transparent', position: 'relative', zIndex: 1 }}>
-            <Header />
-            <Layout>
-              <Sider
-                width={210}
-                style={{
-                  background: 'rgba(10, 14, 23, 0.95)',
-                  borderRight: '1px solid rgba(0, 200, 255, 0.08)',
-                  backdropFilter: 'blur(20px)',
-                }}
-              >
-                <Sidebar />
-              </Sider>
-              <Content
-                style={{
-                  padding: 24,
-                  background: 'transparent',
-                  minHeight: 'calc(100vh - 64px)',
-                }}
-              >
-                <Routes>
-                  <Route path="/" element={<DashboardPage />} />
-                  <Route path="/prices" element={<PricesPage />} />
-                  <Route path="/news" element={<NewsPage />} />
-                  <Route path="/news/:id" element={<NewsDetailPage />} />
-                  <Route path="/enterprises" element={<EnterprisesPage />} />
-                  <Route path="/enterprises/:name" element={<EnterpriseDetailPage />} />
-                  <Route path="/policies" element={<PolicyPage />} />
-                  <Route path="/supply-demand" element={<SupplyDemandPage />} />
-                </Routes>
-              </Content>
-            </Layout>
-          </Layout>
+          <AppLayout />
         </BrowserRouter>
       </ConfigProvider>
     </QueryClientProvider>

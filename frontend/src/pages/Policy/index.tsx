@@ -44,7 +44,7 @@ export default function PolicyPage() {
             style={{ width: 150 }}
             value={province}
             onChange={(val) => { setProvince(val); setPage(1) }}
-            options={(provinces || ['全国']).map((p) => ({ value: p, label: p }))}
+            options={((provinces as string[]) || ['全国']).map((p) => ({ value: p, label: p }))}
           />
           <Select
             placeholder="政策类型"

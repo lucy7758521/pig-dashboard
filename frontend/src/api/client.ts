@@ -1,60 +1,37 @@
 import axios from 'axios'
 
-// 检测运行环境
-const isGitHubPages = window.location.hostname.includes('github.io')
-const BASE = isGitHubPages ? '/pig-dashboard' : ''
-
+// 简单判断：能访问后端API就用后端，否则用静态JSON
 const client = axios.create({
-  baseURL: isGitHubPages ? '' : '/api/v1',
-  timeout: 15000,
+  baseURL: '/api/v1',
+  timeout: 5000,
   headers: { 'Content-Type': 'application/json' },
 })
 
-client.interceptors.response.use(
-  (response) => {
-    const data = response.data
-    if (data.code !== 0 && data.code !== undefined) {
-      return Promise.reject(new Error(data.message || 'API Error'))
-    }
-    return response
-  },
-  (error) => {
-    console.warn('API 不可用:', error.message)
-    return Promise.reject(error)
-  }
-)
+export default client
 
 /**
- * 通用 API 请求：GitHub Pages 上直接用静态 JSON，本地开发用后端 API
+ * 通用请求：先尝试后端 API，失败则加载静态 JSON
  */
-export async function apiGet<T>(path: string, fallbackFile?: string): Promise<T> {
-  // GitHub Pages: 直接加载静态 JSON（跳过 API 请求）
-  if (isGitHubPages && fallbackFile) {
-    const url = `${BASE}/data/${fallbackFile}`
-    const res = await fetch(url)
-    if (res.ok) {
-      const json = await res.json()
+export async function safeGet<T>(apiPath: string, staticFile: string): Promise<T> {
+  // 优先尝试后端 API
+  try {
+    const res = await client.get<T>(apiPath)
+    if (res.data) return res.data
+  } catch {
+    // 后端不可用，降级到静态数据
+  }
+
+  // 加载静态 JSON
+  try {
+    const base = window.location.hostname.includes('github.io') ? '/pig-dashboard' : ''
+    const resp = await fetch(`${base}/data/${staticFile}`)
+    if (resp.ok) {
+      const json = await resp.json()
       return json as T
     }
-    throw new Error(`静态数据加载失败: ${url}`)
+  } catch {
+    console.warn(`静态数据加载失败: ${staticFile}`)
   }
 
-  // 本地开发: 请求后端 API
-  try {
-    const res = await client.get<T>(path)
-    return res.data
-  } catch (err) {
-    // 本地开发时如果后端挂了，也尝试静态数据
-    if (fallbackFile) {
-      const res = await fetch(`/data/${fallbackFile}`)
-      if (res.ok) {
-        const json = await res.json()
-        return json as T
-      }
-    }
-    throw err
-  }
+  throw new Error(`无法加载数据: ${apiPath}`)
 }
-
-export { BASE, isGitHubPages }
-export default client
